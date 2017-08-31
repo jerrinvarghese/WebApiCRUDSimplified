@@ -11,15 +11,49 @@ namespace APICRUD.Controllers
 {
     public class EmpController : ApiController
     {
-        [HttpGet]
-       public IHttpActionResult GetApi()
+
+        public IHttpActionResult GetAllEmployees()
         {
-            Step2017Entities2 en = new Step2017Entities2();
-            List<APIemp> list = en.APIemps.ToList();
-            
-            return Ok(list);
-            
+            List<APIemp> employees = new List<APIemp>();
+            using (var context = new Step2017Entities2())
+            {
+                employees = context.APIemps.ToList();
+            }
+
+            if (employees.Count > 0)
+                return Ok(employees);
+            else
+                return Ok("No students found");
         }
+
+
+
+
+        // [HttpGet]
+        //public IHttpActionResult GetApi()
+        // {
+        //     Step2017Entities2 en = new Step2017Entities2();
+        //     List<APIemp> list = en.APIemps.ToList();
+
+        //     return Ok(list);
+
+        // }
+
+        [Route("GetById")]
+        public IHttpActionResult GetEmployeeById(int id)
+        {
+            APIemp employee = new APIemp();
+            using (var context = new Step2017Entities2())
+            {
+                employee = context.APIemps.Where(s => s.id == id).FirstOrDefault();
+            }
+            if (employee == null)
+                return Ok("No student with given ID found");
+            else
+                return Ok(employee);
+        }
+
+
         [HttpPost]
         public IHttpActionResult PostApi(APIemp em)
         {
@@ -38,7 +72,10 @@ namespace APICRUD.Controllers
             en.SaveChanges();
             return Ok();
         }
-        [HttpPut]
+
+        [Route("update")]
+       [HttpPut]
+       //[HttpPost]
         public IHttpActionResult UpdateApi(APIemp em)
         {
             Step2017Entities2 en = new Step2017Entities2();
